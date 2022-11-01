@@ -1,7 +1,10 @@
 const router = require("express").Router();
-const { createBlog } = require("../controllers/blogs");
-const getBearerToken = require("../middleware/getBearerToken");
-const getUserFromToken = require("../middleware/getUserFromToken");
+const { createBlog, getListOfPublishedBlogs, getPublishedBlog } = require("../controllers/blogs");
+const getBearerToken = require("../middleware/bearerToken");
+const getUserFromToken = require("../middleware/userFromToken");
+
+router.route('/').get(getListOfPublishedBlogs)
+router.route('/:id').get(getPublishedBlog)
 
 // allow only requests with valid tokens
 router.use(getBearerToken, getUserFromToken);

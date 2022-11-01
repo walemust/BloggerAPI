@@ -1,4 +1,5 @@
 const Blog = require("../models/blogModel");
+const { readingTime } = require("../details/details")
 
 const createBlog = async (req, res, next) => {
   try {
@@ -11,6 +12,7 @@ const createBlog = async (req, res, next) => {
       tags,
       author: req.user._id,
       body,
+      reading_time: readingTime(body)
     });
     // save to database
     const createdBlog = await newBlog.save();
@@ -24,6 +26,52 @@ const createBlog = async (req, res, next) => {
   }
 };
 
+const getListOfPublishedBlogs = async (req, res, next) => {
+  try {
+    const blogs = await Blog
+      .find({ state: 'published' })
+      .select({ title: 1 })
+      .populate('author', { username: 1 })
+
+    return res.json({
+      status: true,
+      data: blogs
+    })
+  } catch (err) {
+    err.source = 'get published blogs controller'
+    next(err)
+  }
+}
+
+const getPublishedBlog = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const blog = await Blog.findById(id)
+      .populate('author', { username: 1 })
+
+    if (blog.state !== 'published') {
+      return res.status(403).json({
+        status: false,
+        error: 'Requested article is not published'
+      })
+    }
+
+    // update blog read count
+    blog.read_count += 1
+    await blog.save()
+
+    return res.json({
+      status: true,
+      data: blog
+    })
+  } catch (err) {
+    err.source = 'get published blog controller'
+    next(err)
+  }
+}
+
 module.exports = {
   createBlog,
+  getListOfPublishedBlogs,
+  getPublishedBlog,
 };

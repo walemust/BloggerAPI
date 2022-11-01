@@ -26,17 +26,48 @@ const userModel = new Schema({
   },
 });
 
-userModel.pre("save", async function (next) {
-  const hashedPassword = await hash(this.password, 10);
-  this.password = hashedPassword;
-  next();
-});
+// encrypt password before saving document
+userModel.pre('save', function (next) {
+  let user = this
 
-userModel.methods.verifyPassword = async function (password) {
-  const comparePassword = compare(password, this.password);
-  return comparePassword;
-};
+  // do nothing if the password is not modified
+  if (!user.isModified('password')) return next()
 
-const User = model("User", userModel);
+  // hash the password using our new salt
+  bcrypt.hash(user.password, 10, (err, hash) => {
+    if (err) return next(err)
+
+    //override the clear text password with the hashed one
+    user.password = hash
+    next()
+  })
+})
+
+// Compare user inputted password with password in the database
+userModel.methods.passwordIsValid = function (password) {
+  // get password from the database
+  const passwordHash = this.password
+  return new Promise((resolve, reject) => {
+    // compare the password coming from the user with the hash password in the database
+    bcrypt.compare(password, passwordHash, (err, same) => {
+      if (err) {
+        return reject(err)
+      }
+      resolve(same)
+    })
+  })
+}
+
+userModel.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+    delete returnedObject.password
+  },
+})
+
+
+const User = mongoose.model("User", userModel);
 
 module.exports = User;

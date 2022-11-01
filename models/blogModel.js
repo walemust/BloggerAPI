@@ -8,7 +8,8 @@ const blogSchema = new mongoose.Schema({
   },
   description: String,
   author: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   state: {
@@ -22,8 +23,11 @@ const blogSchema = new mongoose.Schema({
   },
   readingTime: Number,
   tags: [String],
-});
+  body: [String]
+},
+  { timestamps: true }
+);
 
-const blog = mongoose.model("Blog", blogSchema);
+const Blog = mongoose.model("Blog", blogSchema);
 
-module.exports = blog;
+module.exports = Blog;
