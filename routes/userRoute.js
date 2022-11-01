@@ -1,103 +1,110 @@
-const { Router } = require("express");
+// const { Router } = require("express");
 
-const User = require("../models/userModel");
+// const User = require("../models/userModel");
 
-function userRoutes() {
-    const userRoutes = Router();
+// function userRoutes() {
+//     const userRoutes = Router();
 
-    userRoutes
-        .route("/")
-        .get((req, res) => {
-            (async function getusers() {
-                try {
-                    const users = await User.find();
-                    return res.status(200).json({ status: true, users });
-                } catch (err) {
-                    return res.status(500).json(err);
-                }
-            })();
-        })
-        .post((req, res) => {
-            (async function signup() {
-                try {
-                    const { first_name, last_name, email, password, user_type } = req.body;
-                    const newUser = new User({
-                        first_name,
-                        last_name,
-                        email,
-                        password,
-                        user_type,
-                    });
-                    const savedUser = await newUser.save();
-                    return res.status(201).json(savedUser);
-                } catch (err) {
-                    console.log(err);
-                    return res.status(500).json(err);
-                }
-            })();
-        })
-        .post((req, res) => {
-            (async function signin() {
-                try {
-                    const { email, password, user_type } = req.body;
-                    const login = new Login({
-                        email,
-                        password,
-                    });
+//     userRoutes
+//         .route("/")
+//         .get((req, res) => {
+//             (async function getusers() {
+//                 try {
+//                     const users = await User.find();
+//                     return res.status(200).json({ status: true, users });
+//                 } catch (err) {
+//                     return res.status(500).json(err);
+//                 }
+//             })();
+//         })
+//         .post((req, res) => {
+//             (async function signup() {
+//                 try {
+//                     const { first_name, last_name, email, password, user_type } = req.body;
+//                     const newUser = new User({
+//                         first_name,
+//                         last_name,
+//                         email,
+//                         password,
+//                         user_type,
+//                     });
+//                     const savedUser = await newUser.save();
+//                     return res.status(201).json(savedUser);
+//                 } catch (err) {
+//                     console.log(err);
+//                     return res.status(500).json(err);
+//                 }
+//             })();
+//         })
+//         .post((req, res) => {
+//             (async function signin() {
+//                 try {
+//                     const { email, password, user_type } = req.body;
+//                     const login = new Login({
+//                         email,
+//                         password,
+//                     });
 
-                } catch (err) {
-                    console.log(err);
-                    return res.status(500).json(err);
-                }
-            })
-        })
-    userRoutes
-        .route("/:userId")
-        .get((req, res) => {
-            (async function getUser() {
-                try {
-                    const { userId } = req.params;
-                    const user = await User.findById(userId);
-                    if (!user) {
-                        return res.status(404).json({ message: "User not found" });
-                    }
-                    return res.status(200).json(user);
-                } catch (err) {
-                    console.log(err);
-                    return res.status(500).json(err);
-                }
-            })();
-        })
-        .patch((req, res) => {
-            (async function updateUser() {
-                try {
-                    const { userId } = req.params;
-                    const updateInfo = await User.updateOne({ _id: userId }, req.body);
-                    return res
-                        .status(204)
-                        .json({ message: "User updated successfully.", updateInfo });
-                } catch (err) {
-                    console.log(err);
-                    return res.status(500).json(err);
-                }
-            })();
-        })
-        .delete((req, res) => {
-            (async function deleteUser() {
-                try {
-                    const { userId } = req.params;
-                    const deleteInfo = await User.deleteOne({ _id: userId });
-                    return res
-                        .status(200)
-                        .json({ message: "User deleted successfully." });
-                } catch (err) {
-                    console.log(err);
-                    return res.status(500).json(err);
-                }
-            })();
-        });
+//                 } catch (err) {
+//                     console.log(err);
+//                     return res.status(500).json(err);
+//                 }
+//             })
+//         })
+//     userRoutes
+//         .route("/:userId")
+//         .get((req, res) => {
+//             (async function getUser() {
+//                 try {
+//                     const { userId } = req.params;
+//                     const user = await User.findById(userId);
+//                     if (!user) {
+//                         return res.status(404).json({ message: "User not found" });
+//                     }
+//                     return res.status(200).json(user);
+//                 } catch (err) {
+//                     console.log(err);
+//                     return res.status(500).json(err);
+//                 }
+//             })();
+//         })
+//         .patch((req, res) => {
+//             (async function updateUser() {
+//                 try {
+//                     const { userId } = req.params;
+//                     const updateInfo = await User.updateOne({ _id: userId }, req.body);
+//                     return res
+//                         .status(204)
+//                         .json({ message: "User updated successfully.", updateInfo });
+//                 } catch (err) {
+//                     console.log(err);
+//                     return res.status(500).json(err);
+//                 }
+//             })();
+//         })
+//         .delete((req, res) => {
+//             (async function deleteUser() {
+//                 try {
+//                     const { userId } = req.params;
+//                     const deleteInfo = await User.deleteOne({ _id: userId });
+//                     return res
+//                         .status(200)
+//                         .json({ message: "User deleted successfully." });
+//                 } catch (err) {
+//                     console.log(err);
+//                     return res.status(500).json(err);
+//                 }
+//             })();
+//         });
 
-    return userRoutes;
-}
+//     return userRoutes;
+// }
 
-module.exports = userRoutes;
+// module.exports = userRoutes;
+
+const router = require("express").Router();
+const { createUser } = require("../controllers/users");
+
+router.route("/").post(createUser);
+
+module.exports = router;
