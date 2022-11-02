@@ -1,4 +1,4 @@
-const CONFIG = require('./config/config')
+const ACCESS = require('./access/access')
 const express = require('express')
 const errorHandler = require('./middleware/errorHandler')
 const user = require('./routes/userRoute')
@@ -8,13 +8,13 @@ const blog = require('./routes/blogRoute')
 const app = express()
 
 // connect to db
-require('./middleware/database')(CONFIG.DBURI)
+require('./middleware/database')(ACCESS.MONGO_URL)
 
 // parse information from request
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use('/api/user', user)
+app.use('/api/register', user)
 app.use('/api/login', login)
 app.use('/api/blog', blog)
 

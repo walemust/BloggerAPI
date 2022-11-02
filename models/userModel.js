@@ -1,7 +1,7 @@
-const { Schema, model } = require("mongoose");
-const { hash, compare } = require("bcrypt");
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
-const userModel = new Schema({
+const userModel = new mongoose.Schema({
   first_name: {
     type: String,
     required: true,
@@ -60,8 +60,6 @@ userModel.methods.passwordIsValid = function (password) {
 
 userModel.set('toJSON', {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
     delete returnedObject.__v
     delete returnedObject.password
   },

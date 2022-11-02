@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const app = require('../app')
+const app = require('../index')
 const supertest = require('supertest')
 const api = supertest(app)
 const User = require('../models/User')
@@ -15,7 +15,7 @@ describe('check environment variables', () => {
     })
 })
 
-describe('post request to api/signup', () => {
+describe('post request to api/register', () => {
     test('with correct details successfully creates a user', async () => {
         const newUser = {
             firstName: 'User',
@@ -27,7 +27,7 @@ describe('post request to api/signup', () => {
 
         const usersInDbBefore = await check.usersInDb()
         const response = await api
-            .post('/api/signup')
+            .post('/api/register')
             .send(newUser)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -35,7 +35,6 @@ describe('post request to api/signup', () => {
         const usersInDbAfter = await check.usersInDb()
         expect(usersInDbBefore.length).toBe(usersInDbAfter.length - 1)
 
-        expect(Object.keys(response.body.data)).toContain('id')
         expect(Object.keys(response.body.data)).not.toContain('password')
     })
 
@@ -49,7 +48,7 @@ describe('post request to api/signup', () => {
 
         const usersInDbBefore = await check.usersInDb()
         await api
-            .post('/api/signup')
+            .post('/api/register')
             .send(newUser)
             .expect(400)
             .expect('Content-Type', /application\/json/)
