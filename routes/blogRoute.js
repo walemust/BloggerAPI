@@ -4,8 +4,8 @@ const getBearerToken = require("../middleware/bearerToken");
 const getUserFromToken = require("../middleware/userFromToken");
 const pagination = require("../middleware/pagination");
 
-router.route('/').get(pagination, getListOfPublishedBlogs)
-router.route('/:id').get(getPublishedBlog)
+router.route('/get').get(pagination, getListOfPublishedBlogs)
+router.route('/get/:id').get(getPublishedBlog)
 
 // allow only requests with valid tokens
 router.use(getBearerToken, getUserFromToken);
