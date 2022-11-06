@@ -96,89 +96,91 @@ const getPublishedBlog = async (req, res, next) => {
     next(err)
   }
 
-  const updatePublishedBlogState = async (req, res, next) => {
-    try {
-      let { state } = req.body
-      if (!(state && (state.toLowerCase() === 'published' || state.toLowerCase() === 'draft'))) {
-        throw new Error('Please provide a valid state')
-      }
 
-      const blog = await Blog.findByIdAndUpdate(req.params.id, { state: state.toLowerCase() }, { new: true, runValidators: true, context: 'query' })
 
-      if (!blog) {
-        return res.status(404).json({
-          status: 'failed',
-          message: 'Blog not found'
-        })
-      }
+}
 
-      return res.json({
-        status: 'ok',
-        data: blog
-      })
-    } catch (err) {
-      err.source = 'blog update failed'
-      next(err)
+const updatePublishedBlogState = async (req, res, next) => {
+  try {
+    let { state } = req.body
+    if (!(state && (state.toLowerCase() === 'published' || state.toLowerCase() === 'draft'))) {
+      throw new Error('Please provide a valid state')
     }
-  }
 
-  const updatePublishedBlog = async (req, res, next) => {
-    try {
-      let blogUpdate = { ...req.body }
+    const blog = await Blog.findByIdAndUpdate(req.params.id, { state: state.toLowerCase() }, { new: true, runValidators: true, context: 'query' })
 
-      if (blogUpdate.state) delete blogUpdate.state
-
-      const blog = await Blog.findByIdAndUpdate(req.params.id, blogUpdate, { new: true, runValidators: true, context: 'query' })
-
-      if (!blog) {
-        return res.status(404).json({
-          status: 'failed',
-          message: 'Blog not found'
-        })
-      }
-      return res.json({
-        status: 'ok',
-        data: blog
+    if (!blog) {
+      return res.status(404).json({
+        status: 'failed',
+        message: 'Blog not found'
       })
-    } catch (err) {
-      err.source = 'update blog'
-      next(err)
     }
+
+    return res.json({
+      status: 'ok',
+      data: blog
+    })
+  } catch (err) {
+    err.source = 'blog update failed'
+    next(err)
   }
+}
 
-  const deletePublishedBlog = async (req, res, next) => {
-    const user = req.user
-    try {
-      const deletedBlog = await Blog.findByIdAndRemove(req.params.id)
+const updatePublishedBlog = async (req, res, next) => {
+  try {
+    let blogUpdate = { ...req.body }
 
-      if (!deletedBlog) {
-        return res.status(404).json({
-          status: 'failed',
-          error: 'Blog not found'
-        })
-      }
-      const deletedBlogId = deletedBlog._id
-      const index = user.articles.indexOf(deletedBlogId)
-      user.articles.splice(index, 1)
+    if (blogUpdate.state) delete blogUpdate.state
 
-      await user.save()
+    const blog = await Blog.findByIdAndUpdate(req.params.id, blogUpdate, { new: true, runValidators: true, context: 'query' })
 
-      res.json({
-        status: 'success',
-        data: deletedBlog
+    if (!blog) {
+      return res.status(404).json({
+        status: 'failed',
+        message: 'Blog not found'
       })
-    } catch (err) {
-      next(err)
     }
+    return res.json({
+      status: 'ok',
+      data: blog
+    })
+  } catch (err) {
+    err.source = 'update blog'
+    next(err)
   }
+}
 
+const deletePublishedBlog = async (req, res, next) => {
+  const user = req.user
+  try {
+    const deletedBlog = await Blog.findByIdAndRemove(req.params.id)
+
+    if (!deletedBlog) {
+      return res.status(404).json({
+        status: 'failed',
+        error: 'Blog not found'
+      })
+    }
+    const deletedBlogId = deletedBlog._id
+    const index = user.articles.indexOf(deletedBlogId)
+    user.articles.splice(index, 1)
+
+    await user.save()
+
+    res.json({
+      status: 'success',
+      data: deletedBlog
+    })
+  } catch (err) {
+    next(err)
+  }
 }
 
 module.exports = {
   createBlog,
   getListOfPublishedBlogs,
   getPublishedBlog,
+  updatePublishedBlogState,
   updatePublishedBlog,
   deletePublishedBlog,
-  updatePublishedBlogState,
 };
