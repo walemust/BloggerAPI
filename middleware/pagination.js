@@ -43,6 +43,11 @@ module.exports = async (req, res, next) => {
         req.pagination.end = page * size
         req.pagination.numberOfResults = numberOfResults
 
+        req.pageInfo = { results: numberOfResults, totalPages }
+        if (req.pagination.previousPage) req.pageInfo.previousPage = req.pagination.previousPage
+        req.pageInfo.currentPage = req.pagination.page
+        if (req.pagination.nextPage) req.pageInfo.nextPage = req.pagination.nextPage
+
         next()
     } catch (err) {
         err.source = 'pagination middleware'

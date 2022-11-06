@@ -24,6 +24,12 @@ const userModel = new mongoose.Schema({
     type: String,
     required: true,
   },
+  articles: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Article',
+    },
+  ],
 });
 
 // encrypt password before saving document
@@ -43,7 +49,7 @@ userModel.pre('save', function (next) {
   })
 })
 
-// Compare user inputted password with password in the database
+// Compare user input password with password in the database
 userModel.methods.passwordIsValid = function (password) {
   // get password from the database
   const passwordHash = this.password

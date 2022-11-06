@@ -39,6 +39,10 @@ const articleObject = (title) => {
   };
 };
 
+const getRandArrayElement = (arr) => {
+  return arr[Math.floor((Math.random() * arr.length))]
+}
+
 module.exports = {
   usersInDb,
   createUserObject,
@@ -46,4 +50,5 @@ module.exports = {
   articlesInDb,
   initialUsers,
   initialArticles,
+  getRandArrayElement,
 };

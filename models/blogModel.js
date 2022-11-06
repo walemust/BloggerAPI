@@ -12,6 +12,9 @@ const blogSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  owner: {
+    type: String,
+  },
   state: {
     type: String,
     default: "draft",
@@ -23,10 +26,41 @@ const blogSchema = new mongoose.Schema({
   },
   readingTime: Number,
   tags: [String],
-  body: [String]
+  body: String
 },
   { timestamps: true }
 );
+
+// calculate the reading time before saving document
+blogSchema.pre('save', function (next) {
+  let article = this
+
+  // calculate time in minutes
+  const timeToRead = readingTime(this.body)
+
+  article.reading_time = timeNeededToRead
+  next()
+})
+
+// calculate the reading time before updating document
+blogSchema.pre('findOneAndUpdate', function (next) {
+  let article = this._update
+
+  // calculate the time in minutes
+  if (article.body) {
+    const timeNeededToRead = readingTime(article.body)
+    article.reading_time = timeNeededToRead
+  }
+
+  next()
+})
+
+blogSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    delete returnedObject.__v
+    delete returnedObject.owner
+  },
+})
 
 const Blog = mongoose.model("Blog", blogSchema);
 
