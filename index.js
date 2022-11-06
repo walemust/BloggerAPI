@@ -8,7 +8,7 @@ const blog = require("./routes/blogRoute");
 const app = express();
 
 // connect to db
-require("./middleware/database")(ACCESS.MONGO_URL);
+require("./middleware/database")(ACCESS.MONGO_URI);
 
 // parse information from request
 app.use(express.json());
