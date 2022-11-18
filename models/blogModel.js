@@ -38,7 +38,7 @@ blogSchema.pre('save', function (next) {
   // calculate time in minutes
   const timeToRead = readingTime(this.body)
 
-  article.reading_time = timeNeededToRead
+  article.reading_time = timeToRead
   next()
 })
 
